@@ -19,4 +19,3 @@ services:
 
 networks:
   stock-network:
-    external: true
