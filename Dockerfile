@@ -17,4 +17,4 @@ WORKDIR /opt/app/src
 COPY . /opt/app
 
 EXPOSE 9000
-CMD ["python", "/opt/app/src/main.py"]
+CMD ["python", "main.py"]

@@ -6,16 +6,14 @@ services:
       context: ./
       dockerfile: Dockerfile
     working_dir: "/opt/app/src"
-    ports:
-      - "9000:9000"
+    volumes:
+      - ./src/main.py:/opt/app/src/main.py
     networks:
       - stock-network
     logging:
       options:
         max-size: 10m
         max-file: "10"
-    expose:
-      - 9000
 
 networks:
   stock-network:

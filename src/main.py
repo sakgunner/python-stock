@@ -1,5 +1,6 @@
 import yfinance as yf
 
+from sklearn.svm import SVR
 from time import sleep
 
 
@@ -11,7 +12,7 @@ def EMA(data, period=20, column="Close"):
     return data[column].ewm(span=period, adjust=False).mean()
 
 
-def MACD(data, period_long=26, period_short=12, period_signal=9, column="Close"):
+def MACD(data, period_short=12, period_long=26, period_signal=9, column="Close"):
     short_ema = EMA(data, period_short, column=column)
     long_ema = EMA(data, period_long, column=column)
     data["MACD"] = short_ema - long_ema
@@ -36,7 +37,7 @@ def RSI(data, period=14, column="Close"):
     return data
 
 
-def main():
+def technical():
     ticker = yf.Ticker("DELTA.BK")
     """
     period : str
@@ -55,8 +56,40 @@ def main():
     print(his.tail(1))
     # print(his)
 
+
+def predict():
+    ticker = yf.Ticker("DELTA.BK")
+    """
+    period : str
+        Valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
+        Either Use period parameter or use start and end
+    interval : str
+        Valid intervals: 1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo
+        Intraday data cannot extend last 60 days
+    """
+    his = ticker.history(period="3mo", interval="1d", auto_adjust=False, actions=False)
+    days = list()
+    adj_close_prices = list()
+    df_adj_close = his.loc[:, "Adj Close"]
+    for i in range(len(his)):
+        days.append([i+1])
+    for adj_close_price in df_adj_close:
+        adj_close_prices.append(float(adj_close_price))
+    lin_svr = SVR(kernel="linear", C=1000.0)
+    lin_svr.fit(days, adj_close_prices)
+    poly_svr = SVR(kernel="poly", C=1000.0, degree=2)
+    poly_svr.fit(days, adj_close_prices)
+    rbf_svr = SVR(kernel="rbf", C=1000.0, gamma=0.85)
+    rbf_svr.fit(days, adj_close_prices)
+    day = [[len(his)+1]]
+    print("RBF SVR predicted price", rbf_svr.predict(day))
+    print("Linear SVR predicted price", lin_svr.predict(day))
+    print("Polynomial SVR predicted price", poly_svr.predict(day))
+
+
 if __name__ == "__main__":
     # while True:
     #     main()
     #     sleep(60)
-    main()
+    technical()
+    predict()
