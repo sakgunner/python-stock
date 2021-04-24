@@ -38,7 +38,8 @@ def RSI(data, period=14, column="Close"):
 
 
 def technical():
-    ticker = yf.Ticker("DELTA.BK")
+    # ticker = yf.Ticker("DELTA.BK")
+    ticker = yf.Ticker("BTC-USD")
     """
     period : str
         Valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
@@ -52,7 +53,6 @@ def technical():
     RSI(his)
     his["SMA"] = SMA(his)
     his["EMA"] = EMA(his)
-    # print(his["Close"].rolling(window=30).mean())
     print(his.tail(1))
     # print(his)
 
@@ -92,4 +92,4 @@ if __name__ == "__main__":
     #     main()
     #     sleep(60)
     technical()
-    predict()
+    # predict()
